@@ -13,7 +13,7 @@ export const syncData: APIGatewayProxyHandler = async (event) => {
             await queryBi(
                 `INSERT INTO dim_product (product_id, sku, name, ref_cost)
                  VALUES (?, ?, ?, ?)
-                 ON DUPLICATE KEY UPDATE sku = VALUES(sku), name = VALUES(name), ref_cost = VALUES(ref_cost)`,
+                     ON DUPLICATE KEY UPDATE sku = VALUES(sku), name = VALUES(name), ref_cost = VALUES(ref_cost)`,
                 [prod.MatID, prod.SKU, prod.Name, prod.EKPreis]
             );
         }
@@ -32,7 +32,7 @@ export const syncData: APIGatewayProxyHandler = async (event) => {
                 b.status,
                 b.LiefID -- Brauchen wir LiefID für individuelle Versandkostenregeln?
             FROM bestellung b
-            JOIN tabelle_lieferant l ON b.LiefID = l.LieferantID
+                     JOIN tabelle_lieferant l ON b.LiefID = l.LieferantID
             WHERE b.status = 'abgeschlossen' -- Nur abgeschlossene Bestellungen synchronisieren
             ORDER BY b.Bestelldatum ASC
         `);
@@ -44,11 +44,11 @@ export const syncData: APIGatewayProxyHandler = async (event) => {
             await queryBi(
                 `INSERT INTO fact_shipping (shop_id, supplier_name, order_id, order_ts, arrival_ts, ship_cost)
                  VALUES (?, ?, ?, ?, ?, ?)
-                 ON DUPLICATE KEY UPDATE
-                    supplier_name = VALUES(supplier_name),
-                    order_ts = VALUES(order_ts),
-                    arrival_ts = VALUES(arrival_ts),
-                    ship_cost = VALUES(ship_cost)`,
+                     ON DUPLICATE KEY UPDATE
+                                          supplier_name = VALUES(supplier_name),
+                                          order_ts = VALUES(order_ts),
+                                          arrival_ts = VALUES(arrival_ts),
+                                          ship_cost = VALUES(ship_cost)`,
                 [1, order.supplier_name, order.BestellID, order.Bestelldatum, order.EingangZeitStempel, shippingCost] // shop_id ist hardcoded als 1, anpassen falls dynamisch
             );
         }
@@ -71,7 +71,7 @@ export const syncData: APIGatewayProxyHandler = async (event) => {
                 tv.Preis AS sell_price,
                 b.Bestelldatum AS sale_date -- Annahme: Verkaufsdatum kommt aus der BestellTabelle
             FROM tabelle_verkauf tv
-            JOIN bestellung b ON tv.BestellID = b.BestellID -- Annahme: Verkauf ist mit Bestellung verknüpft
+                     JOIN bestellung b ON tv.BestellID = b.BestellID -- Annahme: Verkauf ist mit Bestellung verknüpft
         `);
 
         for (const sale of wawiSales) {
@@ -82,13 +82,13 @@ export const syncData: APIGatewayProxyHandler = async (event) => {
             await queryBi(
                 `INSERT INTO fact_sales (sale_id, product_id, platform_id, date, quantity, sell_price, ref_cost)
                  VALUES (?, ?, ?, ?, ?, ?, ?)
-                 ON DUPLICATE KEY UPDATE
-                    product_id = VALUES(product_id),
-                    platform_id = VALUES(platform_id),
-                    date = VALUES(date),
-                    quantity = VALUES(quantity),
-                    sell_price = VALUES(sell_price),
-                    ref_cost = VALUES(ref_cost)`,
+                     ON DUPLICATE KEY UPDATE
+                                          product_id = VALUES(product_id),
+                                          platform_id = VALUES(platform_id),
+                                          date = VALUES(date),
+                                          quantity = VALUES(quantity),
+                                          sell_price = VALUES(sell_price),
+                                          ref_cost = VALUES(ref_cost)`,
                 [sale.sale_id, sale.product_id, sale.platform_id, sale.sale_date, sale.quantity, sale.sell_price, refCost]
             );
         }

@@ -1,63 +1,91 @@
+# Der Name deines Serverless-Service. Dies wird oft als Präfix für AWS-Ressourcennamen verwendet.
 service: candle-bi-backend
 
+# Die Version des Serverless Frameworks, die für dieses Projekt verwendet wird.
 frameworkVersion: "3"
 
+# --- Provider Konfiguration ---
+# Definiert die Cloud-Provider-Einstellungen für deine Serverless-Anwendungen (hier AWS).
 provider:
-  name: aws
-  runtime: nodejs20.x
-  region: eu-central-1
-  memorySize: 1024
-  timeout: 10
+  name: aws # Der Cloud-Provider ist Amazon Web Services.
+  runtime: nodejs20.x # Die Laufzeitumgebung für deine Lambda-Funktionen.
+  region: eu-central-1 # Die AWS-Region, in der die Ressourcen bereitgestellt werden (Frankfurt).
+  memorySize: 1024 # Der zugewiesene Arbeitsspeicher für jede Lambda-Funktion in MB.
+  timeout: 10 # Die maximale Ausführungszeit für eine Lambda-Funktion in Sekunden.
   environment:
     # --- BI-Datenbank Konfiguration (Alle Frontend-Endpunkte greifen hierauf zu) ---
-    BI_DB_HOST: database.czm0kq64ypq1.eu-central-1.rds.amazonaws.com
-    BI_DB_USER: admin
-    BI_DB_PASSWORD:
-    BI_DB_NAME: bi
+    # Umgebungsvariablen für den Zugriff auf die Business Intelligence (BI) Datenbank.
+    # Diese werden von den Lambda-Funktionen zur Verbindungsherstellung genutzt.
+    BI_DB_HOST: database.czm0kq64ypq1.eu-central-1.rds.amazonaws.com # Hostname der BI-Datenbank.
+    BI_DB_USER: admin # Benutzername für den BI-Datenbankzugriff.
+    BI_DB_PASSWORD: # Passwort für den BI-Datenbankzugriff (sollte sicher verwaltet werden, z.B. über AWS Secrets Manager).
+    BI_DB_NAME: bi # Name der BI-Datenbank.
 
     # --- WaWi-Datenbank Konfiguration (Primär für die Sync-Funktion) ---
-    WAWI_DB_HOST: database.czm0kq64ypq1.eu-central-1.rds.amazonaws.com
-    WAWI_DB_USER: admin
-    WAWI_DB_PASSWORD:
-    WAWI_DB_NAME: wawi
+    # Umgebungsvariablen für den Zugriff auf die Warenwirtschaft (WaWi) Datenbank.
+    # Diese sind primär für die Synchronisierungsfunktion relevant.
+    WAWI_DB_HOST: database.czm0kq64ypq1.eu-central-1.rds.amazonaws.com # Hostname der WaWi-Datenbank.
+    WAWI_DB_USER: admin # Benutzername für den WaWi-Datenbankzugriff.
+    WAWI_DB_PASSWORD: # Passwort für den WaWi-Datenbankzugriff (sollte sicher verwaltet werden).
+    WAWI_DB_NAME: wawi # Name der WaWi-Datenbank.
 
   layers:
-    - { Ref: CommonLambdaLayer }
+    # Definiert Lambda-Layer, die von allen Funktionen in diesem Service genutzt werden.
+    # Das spart Paketgröße und Bereitstellungszeit für gemeinsame Abhängigkeiten.
+    - { Ref: CommonLambdaLayer } # Verweis auf den CommonLambdaLayer, der weiter unten definiert ist.
   vpc:
+    # Konfiguration für die Virtual Private Cloud (VPC)-Integration der Lambda-Funktionen.
+    # Dies ermöglicht den Zugriff auf private Ressourcen wie RDS-Datenbanken.
     securityGroupIds:
-      - sg-068cae3b5d2f5e667
+      - sg-068cae3b5d2f5e667 # Die Sicherheitsgruppe, die den Netzwerkzugriff der Lambdas regelt.
     subnetIds:
+      # Die Subnetze, in denen die Lambdas innerhalb der VPC laufen werden.
       - subnet-0b71c93fd4ba744c2
       - subnet-0e970cf64b3378be3
   httpApi:
-    cors: true
+    # Konfiguration für das HTTP API Gateway, das als Frontend für die Lambda-Funktionen dient.
+    cors: true # Aktiviert Cross-Origin Resource Sharing (CORS), um Anfragen von verschiedenen Domains zu ermöglichen.
 
+# --- Plugins Konfiguration ---
+# Serverless-Plugins erweitern die Funktionalität des Frameworks.
 plugins:
-  - serverless-esbuild
+  - serverless-esbuild # Plugin für das Bauen des Node.js-Codes mit esbuild.
 
+# --- Custom Konfiguration ---
+# Enthält benutzerdefinierte Einstellungen, die von Plugins oder dem Service selbst verwendet werden.
 custom:
   esbuild:
-    bundle: true
-    minify: false
-    sourcemap: false
-    exclude: ["aws-sdk", "mysql2"] # mysql2 muss ausgeschlossen werden, da es im Layer ist
-    target: node20
-    platform: node
-    concurrency: 10
+    bundle: true # Bündelt den Code und seine Abhängigkeiten in eine einzige Datei.
+    minify: false # Deaktiviert die Minimierung des Codes (hilfreich für Debugging).
+    sourcemap: false # Deaktiviert Source Maps.
+    exclude: ["aws-sdk", "mysql2"] # Module, die nicht gebündelt werden sollen.
+      # 'aws-sdk' ist in der Lambda-Umgebung verfügbar.
+    # 'mysql2' wird im Layer bereitgestellt.
+    target: node20 # Ziel-Node.js-Version für esbuild.
+    platform: node # Zielplattform ist Node.js.
+    concurrency: 10 # Maximale Anzahl gleichzeitig laufender esbuild-Prozesse.
 
+# --- Package Konfiguration ---
+# Steuert, wie der Code und die Artefakte für die Bereitstellung verpackt werden.
 package:
-  individually: true
-  excludeDevDependencies: true
+  individually: true # Jede Funktion wird in einem separaten Paket bereitgestellt.
+  excludeDevDependencies: true # Entwicklungsspezifische Abhängigkeiten werden nicht ins Paket aufgenommen.
 
+# --- Functions Konfiguration ---
+# Definiert die einzelnen AWS Lambda-Funktionen in diesem Service.
 functions:
-  # Alle BI-Funktionen MÜSSEN queryBi verwenden!
-  getSales:
-    handler: src/sales/getSales.getSales
-    events:
-      - httpApi:
-          path: /sales
-          method: get
+  # WICHTIGER HINWEIS: Alle BI-bezogenen Funktionen SOLLTEN `queryBi` aus dem `db`-Modul verwenden,
+  # um sicherzustellen, dass sie mit der BI-Datenbank interagieren.
 
+  # Lambda-Funktion zum Abrufen aller Verkaufsdaten.
+  getSales:
+    handler: src/sales/getSales.getSales # Pfad zum Handler-Code der Funktion.
+    events: # Ereignisse, die diese Lambda-Funktion auslösen.
+      - httpApi: # HTTP API Gateway Event.
+          path: /sales # Der API-Pfad für diesen Endpunkt.
+          method: get # Die HTTP-Methode.
+
+  # Lambda-Funktion zum Abrufen einer Verkaufszusammenfassung.
   getSalesSummary:
     handler: src/sales/getSalesSummary.getSalesSummary
     events:
@@ -65,6 +93,7 @@ functions:
           path: /sales/summary
           method: get
 
+  # Lambda-Funktion zum Abrufen von Verkaufsdaten als Zeitreihe.
   getSalesTimeseries:
     handler: src/sales/getSalesTimeseries.getSalesTimeseries
     events:
@@ -72,6 +101,7 @@ functions:
           path: /sales/timeseries
           method: get
 
+  # Lambda-Funktion zum Speichern eines neuen Verkaufsdatensatzes.
   postSale:
     handler: src/sales/postSales.postSale
     events:
@@ -79,6 +109,7 @@ functions:
           path: /sales
           method: post
 
+  # Lambda-Funktion zum Abrufen aller Produkte.
   getProducts:
     handler: src/products/getProducts.getProducts
     events:
@@ -86,13 +117,15 @@ functions:
           path: /products
           method: get
 
+  # Lambda-Funktion zum Abrufen eines spezifischen Produkts anhand seiner ID.
   getProductById:
     handler: src/products/getProductById.getProductById
     events:
       - httpApi:
-          path: /product/{id}
+          path: /product/{id} # Pfad mit einem dynamischen Parameter für die Produkt-ID.
           method: get
 
+  # Lambda-Funktion zum Aktualisieren eines spezifischen Produkts anhand seiner ID.
   updateProduct:
     handler: src/products/updateProduct.updateProduct
     events:
@@ -100,6 +133,7 @@ functions:
           path: /product/{id}
           method: put
 
+  # Lambda-Funktion zum Abrufen der Bestseller-Produkte.
   getBestsellers:
     handler: src/products/getBestsellers.getBestsellers
     events:
@@ -107,13 +141,15 @@ functions:
           path: /products/bestseller
           method: get
 
-  getProductSummary: # HIER war der doppelte Eintrag, jetzt nur einmal
+  # Lambda-Funktion zum Abrufen einer Zusammenfassung für ein spezifisches Produkt.
+  getProductSummary:
     handler: src/products/getProductSummary.getProductSummary
     events:
       - httpApi:
           path: /product/{id}/summary
           method: get
 
+  # Lambda-Funktion zum Abrufen aller Plattformen.
   getPlatforms:
     handler: src/platforms/getPlatforms.getPlatforms
     events:
@@ -121,13 +157,15 @@ functions:
           path: /platforms
           method: get
 
+  # Lambda-Funktion zum Abrufen von Dashboard-Daten für einen spezifischen Benutzer.
   getDashboard:
     handler: src/dashboard/getDashboard.getDashboard
     events:
       - httpApi:
-          path: /dashboard/{user}
+          path: /dashboard/{user} # Pfad mit einem dynamischen Parameter für den Benutzernamen.
           method: get
 
+  # Lambda-Funktion zum Speichern/Aktualisieren von Dashboard-Daten für einen spezifischen Benutzer.
   postDashboard:
     handler: src/dashboard/postDashboard.postDashboard
     events:
@@ -135,6 +173,7 @@ functions:
           path: /dashboard/{user}
           method: post
 
+  # Lambda-Funktion zum Abrufen von Versandverzögerungen und -kosten.
   getShippingDelays:
     handler: src/shipping/getShippingDelays.getShippingDelays
     events:
@@ -142,14 +181,17 @@ functions:
           path: /shipping/delays
           method: get
 
-  # Die Sync-Funktion, die sowohl WaWi als auch BI DBs nutzen würde
+  # Die Sync-Funktion, die sowohl WaWi- als auch BI-Datenbanken nutzt.
+  # Diese Funktion ist nicht direkt über HTTP API Gateway zugänglich,
+  # sondern kann manuell (z.B. über die AWS Konsole) oder per Zeitplan ausgelöst werden.
   syncWawiToBi:
     handler: src/syncWawiToBi.syncData
-    # Keine Events, wie gewünscht, kann aber manuell ausgelöst werden
 
+# --- Layers Konfiguration ---
+# Definiert wiederverwendbare Lambda-Layer.
 layers:
-  common:
-    path: layer
-    name: candle-bi-backend-common
+  common: # Der logische Name des Layers.
+    path: layer # Der lokale Pfad zum Inhalt des Layers.
+    name: candle-bi-backend-common # Der Name des Layers in AWS.
     compatibleRuntimes:
-      - nodejs20.x
+      - nodejs20.x # Die Laufzeiten, mit denen dieser Layer kompatibel ist.

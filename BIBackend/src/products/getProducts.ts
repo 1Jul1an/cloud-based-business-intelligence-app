@@ -1,7 +1,15 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { queryBi } from '../db';
 
-export const getProducts: APIGatewayProxyHandler = async (event) => { // <<< WICHTIG: Exportierter Name
+/**
+ * AWS Lambda Handler zum Abrufen aller Produkte aus der BI-Datenbank.
+ * Diese Funktion führt eine SQL-Abfrage aus, um Produktinformationen wie
+ * Produkt-ID, SKU, Name und Referenzkosten abzurufen und als JSON zu liefern.
+ *
+ * @param event Das APIGatewayProxyEvent-Objekt, das die Anfrageinformationen enthält.
+ * @returns Ein APIGatewayProxyResult-Objekt mit dem HTTP-Statuscode, Headern und dem JSON-Antwortkörper.
+ */
+export const getProducts: APIGatewayProxyHandler = async (event) => {
   try {
     const result = await queryBi(`
             SELECT
