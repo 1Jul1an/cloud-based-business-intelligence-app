@@ -23,7 +23,6 @@ pids
 *.seed
 *.pid.lock
 # Directory for compiled output
-lib/
 dist/
 
 # Editor directories and files
