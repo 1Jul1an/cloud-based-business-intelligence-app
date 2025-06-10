@@ -1,0 +1,29 @@
+{
+  "name": "candle-bi-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "aws-lambda": "^1.0.7",
+    "dotenv": "^16.5.0",
+    "mysql2": "^3.14.1",
+    "serverless": "^3"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.149",
+    "@types/dotenv": "^6.1.1",
+    "@types/node": "^22.15.17",
+    "esbuild": "^0.25.4",
+    "serverless-esbuild": "^1.55.0",
+    "serverless-offline": "^14.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

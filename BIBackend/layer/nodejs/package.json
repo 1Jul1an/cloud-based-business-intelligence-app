@@ -1,0 +1,8 @@
+{
+  "name": "common-lambda-layer-dependencies",
+  "version": "1.0.0",
+  "description": "Common dependencies for Lambda layer",
+  "dependencies": {
+    "mysql2": "^3.x.x"
+  }
+}

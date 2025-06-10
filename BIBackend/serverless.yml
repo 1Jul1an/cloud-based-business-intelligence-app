@@ -1,0 +1,155 @@
+service: candle-bi-backend
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-central-1
+  memorySize: 1024
+  timeout: 10
+  environment:
+    # --- BI-Datenbank Konfiguration (Alle Frontend-Endpunkte greifen hierauf zu) ---
+    BI_DB_HOST: database.czm0kq64ypq1.eu-central-1.rds.amazonaws.com
+    BI_DB_USER: admin
+    BI_DB_PASSWORD:
+    BI_DB_NAME: bi
+
+    # --- WaWi-Datenbank Konfiguration (Primär für die Sync-Funktion) ---
+    WAWI_DB_HOST: database.czm0kq64ypq1.eu-central-1.rds.amazonaws.com
+    WAWI_DB_USER: admin
+    WAWI_DB_PASSWORD:
+    WAWI_DB_NAME: wawi
+
+  layers:
+    - { Ref: CommonLambdaLayer }
+  vpc:
+    securityGroupIds:
+      - sg-068cae3b5d2f5e667
+    subnetIds:
+      - subnet-0b71c93fd4ba744c2
+      - subnet-0e970cf64b3378be3
+  httpApi:
+    cors: true
+
+plugins:
+  - serverless-esbuild
+
+custom:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: false
+    exclude: ["aws-sdk", "mysql2"] # mysql2 muss ausgeschlossen werden, da es im Layer ist
+    target: node20
+    platform: node
+    concurrency: 10
+
+package:
+  individually: true
+  excludeDevDependencies: true
+
+functions:
+  # Alle BI-Funktionen MÜSSEN queryBi verwenden!
+  getSales:
+    handler: src/sales/getSales.getSales
+    events:
+      - httpApi:
+          path: /sales
+          method: get
+
+  getSalesSummary:
+    handler: src/sales/getSalesSummary.getSalesSummary
+    events:
+      - httpApi:
+          path: /sales/summary
+          method: get
+
+  getSalesTimeseries:
+    handler: src/sales/getSalesTimeseries.getSalesTimeseries
+    events:
+      - httpApi:
+          path: /sales/timeseries
+          method: get
+
+  postSale:
+    handler: src/sales/postSales.postSale
+    events:
+      - httpApi:
+          path: /sales
+          method: post
+
+  getProducts:
+    handler: src/products/getProducts.getProducts
+    events:
+      - httpApi:
+          path: /products
+          method: get
+
+  getProductById:
+    handler: src/products/getProductById.getProductById
+    events:
+      - httpApi:
+          path: /product/{id}
+          method: get
+
+  updateProduct:
+    handler: src/products/updateProduct.updateProduct
+    events:
+      - httpApi:
+          path: /product/{id}
+          method: put
+
+  getBestsellers:
+    handler: src/products/getBestsellers.getBestsellers
+    events:
+      - httpApi:
+          path: /products/bestseller
+          method: get
+
+  getProductSummary: # HIER war der doppelte Eintrag, jetzt nur einmal
+    handler: src/products/getProductSummary.getProductSummary
+    events:
+      - httpApi:
+          path: /product/{id}/summary
+          method: get
+
+  getPlatforms:
+    handler: src/platforms/getPlatforms.getPlatforms
+    events:
+      - httpApi:
+          path: /platforms
+          method: get
+
+  getDashboard:
+    handler: src/dashboard/getDashboard.getDashboard
+    events:
+      - httpApi:
+          path: /dashboard/{user}
+          method: get
+
+  postDashboard:
+    handler: src/dashboard/postDashboard.postDashboard
+    events:
+      - httpApi:
+          path: /dashboard/{user}
+          method: post
+
+  getShippingDelays:
+    handler: src/shipping/getShippingDelays.getShippingDelays
+    events:
+      - httpApi:
+          path: /shipping/delays
+          method: get
+
+  # Die Sync-Funktion, die sowohl WaWi als auch BI DBs nutzen würde
+  syncWawiToBi:
+    handler: src/syncWawiToBi.syncData
+    # Keine Events, wie gewünscht, kann aber manuell ausgelöst werden
+
+layers:
+  common:
+    path: layer
+    name: candle-bi-backend-common
+    compatibleRuntimes:
+      - nodejs20.x

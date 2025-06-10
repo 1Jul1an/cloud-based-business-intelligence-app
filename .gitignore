@@ -1,0 +1,59 @@
+# SvelteKit .gitignore
+.svelte-kit/
+build/
+.env
+.env.*
+.DS_Store
+node_modules/
+
+# Node.js specific
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+# Directory for compiled output
+lib/
+dist/
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+.cache/
+.project
+.settings/
+tmp/
+*.tmp
+*.bak
+*.orig
+
+# AWS specific
+.aws/
+# Lambda deployment packages (if not handled by serverless/terraform/etc.)
+*.zip
+
+# Database related (if local dev setup creates these)
+*.db
+*.sqlite
+data/*.db # Example for a local database file
+
+# Jest/Vitest (if used)
+coverage/
+.vitest-cache/
+
+# User-specific files or directories that should not be committed
+# For example, if you have a local config file not tracked by git:
+# config.local.js
+# my-secret-keys.json

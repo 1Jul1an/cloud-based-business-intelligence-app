@@ -1,0 +1,16 @@
+// tsconfig.json (im Projekt-Root)
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "outDir": "./.serverless_build", // esbuild nutzt dies als temporäres Ausgabeverzeichnis
+    "rootDir": "./src",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true // Falls du JSON-Dateien importierst
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "layer", "tests"] // WICHTIG: "layer" ausschließen
+}
