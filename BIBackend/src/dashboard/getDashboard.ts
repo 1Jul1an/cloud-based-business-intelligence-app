@@ -1,5 +1,5 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
-import { queryBi } from "../db"; // <<< WICHTIG: queryBi importieren
+import { queryBi } from "../db";
 
 export const getDashboard: APIGatewayProxyHandler = async (event) => {
   const userName = event.pathParameters?.user;

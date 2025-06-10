@@ -1,5 +1,5 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
-import { queryBi } from "../db"; // <<< WICHTIG: queryBi importieren
+import { queryBi } from "../db";
 
 export const getDashboard: APIGatewayProxyHandler = async (event) => {
   const userName = event.pathParameters?.user;
@@ -21,7 +21,7 @@ export const getDashboard: APIGatewayProxyHandler = async (event) => {
         parsedConfig = JSON.parse(configJson);
       } catch (parseError) {
         console.error("Failed to parse config_json for user", userName, ":", parseError);
-        // Je nach Anwendungsfall: Fehler werfen, Raw-String zurückgeben oder Standardwert
+
         return {
           statusCode: 500,
           body: JSON.stringify({ error: "Fehler beim Parsen der Dashboard-Konfiguration." }),
@@ -40,7 +40,7 @@ export const getDashboard: APIGatewayProxyHandler = async (event) => {
       };
     }
   } catch (error) {
-    console.error("Error fetching dashboard config:", error); // Bessere Fehlermeldung
+    console.error("Error fetching dashboard config:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: (error as Error).message }),
