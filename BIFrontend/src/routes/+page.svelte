@@ -5,6 +5,17 @@
     import Footer from "$lib/components/Footer.svelte"; // Importiert die Footer-Komponente.
     // Importiert Hilfsfunktionen und Konstanten aus der API-Datei, um Daten zu fetchen und Konfigurationen bereitzustellen.
     import { API_BASE, KPI_OPTIONS, AXIS_LABELS, CHART_TYPE_OPTIONS, fetchData } from '$lib/api';
+    // Importiert Authentifizierungsfunktionen, um den Login-Status und die Benutzerrolle zu überprüfen.
+import { isLoggedIn} from '$lib/auth';
+
+    // Schutz: Weiterleitung wenn nicht eingeloggt oder falsche Rolle
+    onMount(() => {
+        if (!isLoggedIn()) {
+            window.location.href = '/';
+        } else {
+            fetchKPI();
+        }
+    });
 
     // Definiert statische Optionen für die verfügbaren Diagrammtypen.
     const CHART_TYPES = [
@@ -440,7 +451,7 @@
 
     // Lifecycle Hook: Wird einmal ausgeführt, wenn die Komponente initialisiert und ins DOM eingefügt wurde.
     // Startet den ersten Datenabruf.
-    onMount(() => { fetchKPI(); });
+    // onMount(() => { fetchKPI(); });
 </script>
 
 <div class="flex flex-col h-screen overflow-hidden">

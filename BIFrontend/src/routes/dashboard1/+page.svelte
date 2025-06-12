@@ -4,6 +4,9 @@
     import Header from "$lib/components/Header.svelte";
     import Footer from "$lib/components/Footer.svelte";
     import { API_BASE, KPI_OPTIONS, AXIS_LABELS, CHART_TYPE_OPTIONS, fetchData } from '$lib/api';
+import { userRole } from '$lib/auth';
+let role: string | null = null;
+$userRole && (role = $userRole);
 
     const CHART_TYPES = [
         { id: "bar", label: "Balkendiagramm" },

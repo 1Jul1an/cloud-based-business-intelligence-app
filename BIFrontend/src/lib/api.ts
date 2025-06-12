@@ -1,7 +1,7 @@
 // src/lib/api.ts
 
 // Die Basis-URL für deine AWS API Gateway Endpunkte. Alle API-Aufrufe werden mit dieser URL beginnen.
-export const API_BASE = 'https://zgcb9j8xcj.execute-api.eu-central-1.amazonaws.com';
+export const API_BASE = import.meta.env.VITE_API_BASE;
 
 /**
  * Definiert die verfügbaren Key Performance Indicators (KPIs) für das Dashboard.
@@ -76,56 +76,19 @@ export const CHART_TYPE_OPTIONS: Record<string, string[]> = {
  * @returns Eine Promise, die mit den geparsten JSON-Daten aufgelöst wird.
  * @throws {Error} Wenn die HTTP-Anfrage fehlschlägt, der Content-Type unerwartet ist oder JSON-Parsing fehlschlägt.
  */
-export async function fetchData(endpoint: string, params: Record<string, string> = {}, extraQueryParams: Record<string, string> = {}) {
-    // Konstruiert die vollständige URL unter Verwendung der Basis-URL und des Endpunkts.
-    const url = new URL(API_BASE + endpoint);
+export async function fetchData(endpoint: string, pathParams = {}, queryParams = {}) {
+	const token = localStorage.getItem('access_token');
+const url = new URL(`${API_BASE}${endpoint}`);
+	Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
 
-    // Fügt Pfad-Parameter zur URL hinzu (aktuell nicht genutzt, aber für zukünftige Erweiterungen vorbereitet).
-    // Beachte: Wenn `params` verwendet werden, müssen diese im `endpoint`-String als Platzhalter vorhanden sein
-    // und hier entsprechend ersetzt werden (z.B. `/product/{id}`). Die aktuelle Implementierung hängt sie als Query-Parameter an.
-    // Dies müsste angepasst werden, falls echte Pfad-Parameter benötigt werden.
-    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+	const res = await fetch(url.toString(), {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
 
-    // Fügt zusätzliche Query-Parameter zur URL hinzu.
-    Object.keys(extraQueryParams).forEach(key => url.searchParams.append(key, extraQueryParams[key]));
-
-    // Führt die HTTP-Anfrage durch.
-    const res = await fetch(url.toString());
-
-    // Überprüft, ob die HTTP-Antwort erfolgreich war (Statuscode 2xx).
-    if (!res.ok) {
-        let errorMsg = `HTTP-Fehler: ${res.status}`;
-        try {
-            // Versucht, eine detailliertere Fehlermeldung aus dem JSON-Antwortkörper zu extrahieren.
-            const errorJson = await res.json();
-            if (errorJson && errorJson.message) {
-                errorMsg += ` - ${errorJson.message}`;
-            }
-        } catch (e) {
-            // Ignoriert Fehler beim Parsen des JSON-Bodys, wenn der Body kein gültiges JSON ist.
-        }
-        // Wirft einen Fehler mit der konstruierten Fehlermeldung.
-        throw new Error(errorMsg);
-    }
-
-    // Ermittelt den Content-Type des Antwortkörpers.
-    const contentType = res.headers.get('content-type') || '';
-
-    // Verarbeitet die Antwort basierend auf dem Content-Type.
-    if (contentType.includes('application/json')) {
-        // Wenn der Content-Type JSON ist, wird der Body als JSON geparst.
-        return await res.json();
-    } else if (contentType.includes('text/plain')) {
-        // Wenn der Content-Type Text ist, versucht, den Text als JSON zu parsen.
-        const text = await res.text();
-        try {
-            return JSON.parse(text);
-        } catch (parseErr) {
-            // Wirft einen Fehler, wenn der Text nicht als JSON geparst werden kann.
-            throw new Error('Plain Text konnte nicht als JSON geparst werden.');
-        }
-    } else {
-        // Wirft einen Fehler für unerwartete Content-Types.
-        throw new Error(`Unerwarteter Content-Type: ${contentType}`);
-    }
+	if (!res.ok) {
+		throw new Error(`Fehler beim Laden: ${res.status}`);
+	}
+	return await res.json();
 }

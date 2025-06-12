@@ -1,5 +1,6 @@
 <script lang="ts">
-    export let title: string = 'BI Dashboard';
+   	import { logout } from '$lib/auth';
+    export let title: string = 'Business Intelligence Dashboard';
 </script>
 
 <header class="w-full bg-white shadow-sm border-b border-slate-100">
@@ -11,6 +12,10 @@
             <a href="/" class="hover:text-blue-500 font-medium">Home</a>
             <a href="/reports" class="hover:text-blue-500 font-medium">Reports</a>
             <a href="/settings" class="hover:text-blue-500 font-medium">Einstellungen</a>
+            <button class="ml-auto text-sm text-red-500 hover:underline" on:click={logout}>
+		Logout
+	</button>
         </nav>
+       
     </div>
 </header>
