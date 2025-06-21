@@ -41,7 +41,7 @@ Die App ermöglicht die Analyse und Visualisierung von Verkaufs-, Versand- und P
 * Versandzeit Verlauf nach Datum
 * Produktübersicht & Einzelverkaufsdaten
 
-Diese Metriken werden über REST-Endpunkte aggregiert und im Frontend dynamisch dargestellt.
+Diese Metriken werden über HTTP-Endpunkte aggregiert und im Frontend dynamisch dargestellt.
 
 ---
 
