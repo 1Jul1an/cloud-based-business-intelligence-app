@@ -2,7 +2,7 @@
 
 ## Projektübersicht
 
-Diese Anwendung entstand im Rahmen des Moduls **Mobile Business-Anwendungen (Teil 2)** an der Hochschule Harz (6. Semester, Bachelor Wirtschaftsinformatik / Medieninformatik). Ziel ist der Aufbau einer cloudbasierten Business-Intelligence-Plattform zur Entscheidungsunterstützung für ein Handelsunternehmen.
+Diese Anwendung entstand im Rahmen des Moduls **Mobile Business-Anwendungen (Teil 2)** an der Hochschule Harz (6. Semester, Bachelor Wirtschaftsinformatik). Ziel ist der Aufbau einer cloudbasierten Business-Intelligence-Plattform zur Entscheidungsunterstützung für ein Handelsunternehmen.
 
 Die App ermöglicht die Analyse und Visualisierung von Verkaufs-, Versand- und Produktdaten aus einem angebundenen ERP-System. Die Architektur ist vollständig serverlos umgesetzt und auf Skalierbarkeit, Modularität und Erweiterbarkeit ausgelegt.
 
