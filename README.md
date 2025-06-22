@@ -64,6 +64,7 @@ Diese Metriken werden über HTTP-Endpunkte aggregiert und im Frontend dynamisch 
 │ Lambda-Funktionen (Node.js)│
 └────────────┬───────────────┘
       ↓ queryWawi / queryBi
+             ↓
 ┌────────────────────────────┐
 │ Amazon RDS (ERP + BI DBs)  │
 └────────────────────────────┘
