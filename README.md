@@ -147,13 +147,20 @@ Dieses Projekt wurde im Rahmen eines Hochschulmoduls erstellt und dient ausschli
 **Projektteam Business Intelligence App**
 
 * **Julian B.** – Datenbank / Backend / Frontend / AWS Deployment / Dokumentation
-  GitHub: [@1Jul1an](https://github.com/1Jul1an)
+
+  -> GitHub: [@1Jul1an](https://github.com/1Jul1an)
 
 * **Omar K.** – Auth / Backend / AWS Deployment
-  GitHub: [@Ok963](https://github.com/Ok963)
+
+  -> GitHub: [@Ok963](https://github.com/Ok963)
 
 * **Ben V.** – AWS Deployment / Dokumentation
-  GitHub: [@B3n-31](https://github.com/B3n-31)
+
+  -> GitHub: [@B3n-31](https://github.com/B3n-31)
+
+* **Franz L.** – Stakeholderanalyse, AWS Deploy, Requirements
+
+  -> GitHub: *(tba)*
 
 
 ## Screenshots
