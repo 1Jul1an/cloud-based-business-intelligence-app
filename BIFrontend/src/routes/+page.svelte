@@ -164,28 +164,27 @@
      * @returns Den passenden Label-String.
      */
     function getChartLabels(dataItem: any, kpiId: string) {
-        switch (kpiId) {
-            case 'bestseller':
-                return dataItem.name; // Produktname für Bestseller.
-            case 'platform_revenue':
-                return dataItem.platform; // Plattformname für Plattformumsatz.
-            case 'sales_timeseries':
-                const salesDate = new Date(dataItem.date);
-                // Formatiert das Datum, wenn es gültig ist, sonst den Originalwert.
-                return !isNaN(salesDate.getTime()) ? salesDate.toLocaleDateString('de-DE') : dataItem.date;
-            case 'shipping_cost_timeseries': // NEU: Labels für Versandkosten-Zeitreihe
-            case 'shipping_delays_timeseries': // NEU: Labels für Lieferverzögerungen-Zeitreihe
-                const shippingDate = new Date(dataItem.order_date);
-                return !isNaN(shippingDate.getTime()) ? shippingDate.toLocaleDateString('de-DE') : dataItem.order_date;
-            case 'products':
-                return dataItem.name || `Produkt ${dataItem.product_id}`; // Produktname oder Fallback.
-            case 'sales':
-                return dataItem.sale_id; // Verkaufs-ID für einzelne Verkäufe.
-            default:
-                // Standard-Fallback-Labels.
-                return dataItem.name || dataItem.label || dataItem.id || `Item ${dataItem.index || ''}`;
-        }
-    }
+    const simpleLabels: Record<string, string> = {
+        bestseller: dataItem.name,
+        platform_revenue: dataItem.platform,
+        products: dataItem.name || `Produkt ${dataItem.product_id}`,
+        sales: dataItem.sale_id
+    };
+
+    if (kpiId in simpleLabels) return simpleLabels[kpiId];
+
+    const formatDate = (d: string) => {
+        const date = new Date(d);
+        return isNaN(date.getTime()) ? d : date.toLocaleDateString('de-DE');
+    };
+
+    if (kpiId === 'sales_timeseries') return formatDate(dataItem.date);
+    if (kpiId.startsWith('shipping_')) return formatDate(dataItem.order_date);
+
+    // Standard-Fallback
+    return dataItem.name || dataItem.label || dataItem.id || `Item ${dataItem.index || ''}`;
+}
+
 
     /**
      * Filtert die Schlüssel eines Datenelements, um nur die für das Diagramm relevanten numerischen Werte zu erhalten.
