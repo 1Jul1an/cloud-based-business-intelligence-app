@@ -160,7 +160,7 @@ Dieses Projekt wurde im Rahmen eines Hochschulmoduls erstellt und dient ausschli
 
 * **Franz L.** – Stakeholderanalyse, AWS Deploy, Requirements
 
-  -> GitHub: *(tba)*
+  -> GitHub: [@FranzRL](https://github.com/FranzRL)
 
 
 ## Screenshots
