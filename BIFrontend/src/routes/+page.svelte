@@ -124,37 +124,33 @@
      * Dies hilft, leere oder fehlerhafte Diagramme zu vermeiden.
      * @returns `true`, wenn keine geeigneten Daten für ein Diagramm vorhanden sind, sonst `false`.
      */
-    function isDataEmptyForChart() {
-        // Grundlegende Prüfung auf das Vorhandensein und den Typ der Daten.
-        if (!kpiData || !Array.isArray(kpiData) || kpiData.length === 0) return true;
+    function isDataEmptyForChart(): boolean {
+     if (!Array.isArray(kpiData) || kpiData.length === 0) return true;
 
         const relevantKeys = getChartRelevantKeys(kpiData[0]);
-        // Wenn keine relevanten numerischen Schlüssel gefunden wurden
-        // und es sich nicht um einen bekannten Zeitreihen- oder Bestseller-KPI handelt.
-        if (relevantKeys.length === 0 && !(['sales_timeseries', 'bestseller', 'shipping_cost_timeseries', 'shipping_delays_timeseries'].includes(selectedKpi))) {
-            return true;
-        }
+         const specialKPIs = [
+            'sales_timeseries',
+            'bestseller',
+            'shipping_cost_timeseries',
+            'shipping_delays_timeseries'
+        ];
 
-        // Spezifische Prüfungen für Zeitreihen- und Bestseller-KPIs, ob wirklich Datenwerte vorhanden sind.
-        return kpiData.every(item => {
-            if (['sales_timeseries', 'bestseller', 'shipping_cost_timeseries', 'shipping_delays_timeseries'].includes(selectedKpi)) {
-                let hasData = false;
-                if (selectedKpi === 'sales_timeseries') {
-                    hasData = (item.total_quantity && Number(item.total_quantity) > 0) || (item.total_revenue && Number(item.total_revenue) > 0);
-                } else if (selectedKpi === 'bestseller') {
-                    hasData = (item.total_quantity && Number(item.total_quantity) > 0) || (item.total_revenue && Number(item.total_revenue) > 0);
-                } else if (selectedKpi === 'shipping_cost_timeseries') { // NEU: Prüfung für Versandkosten-Zeitreihe
-                    hasData = (item.daily_shipping_cost && Number(item.daily_shipping_cost) > 0);
-                } else if (selectedKpi === 'shipping_delays_timeseries') { // NEU: Prüfung für Lieferverzögerungen-Zeitreihe
-                    hasData = (item.average_daily_delivery_time_days && Number(item.average_daily_delivery_time_days) > 0);
-                }
-                return !hasData; // Wenn keine Daten vorhanden sind, ist die Bedingung erfüllt.
-            } else {
-                // Für andere KPIs: Prüft, ob alle relevanten Schlüssel null, undefined oder 0 sind.
-                return relevantKeys.every(key => item[key] === null || item[key] === undefined || (typeof item[key] === 'number' && item[key] === 0));
-            }
-        });
+        // keine relevanten Keys und kein Sonderfall → keine Daten
+        if (relevantKeys.length === 0 && !specialKPIs.includes(selectedKpi)) return true;
+
+        const hasPositiveValue = (v: any) => Number(v) > 0;
+
+        const kpiRules: Record<string, (i: any) => boolean> = {
+            sales_timeseries: i => hasPositiveValue(i.total_quantity) || hasPositiveValue(i.total_revenue),
+            bestseller: i => hasPositiveValue(i.total_quantity) || hasPositiveValue(i.total_revenue),
+            shipping_cost_timeseries: i => hasPositiveValue(i.daily_shipping_cost),
+            shipping_delays_timeseries: i => hasPositiveValue(i.average_daily_delivery_time_days)
+        };
+        const rule = kpiRules[selectedKpi];
+        return kpiData.every(item =>rule? !rule(item): relevantKeys.every(key => item[key] == null || (typeof item[key] === 'number' && item[key] === 0))
+        );
     }
+
 
     /**
      * Ermittelt die passenden Labels für die X-Achse (oder Segmente bei Kreisdiagrammen)
