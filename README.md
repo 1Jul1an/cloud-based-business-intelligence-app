@@ -169,4 +169,7 @@ Dieses Projekt wurde im Rahmen eines Hochschulmoduls erstellt und dient ausschli
 ![KPI Dashboard](https://github.com/user-attachments/assets/b4f4b57e-97b8-49f9-9438-4dc82c62a672)
 *Interaktives Dashboard mit Chart.js und dynamischen KPIs (Svelte-basiert).*
 
+---
 
+- (22.02.2026) FrontendV2: Neues BIFrontend als Next.js (React) App mit Dashboard/Explore sowie Chart Builder + Saved Charts, Filter-UI und Component-Library; alte Svelte-Struktur entfernt und Projektsetup angepasst.
+![KPI Dashboard](https://github.com/user-attachments/assets/6b082388-5a70-4fee-854e-e0dc0c478245)
