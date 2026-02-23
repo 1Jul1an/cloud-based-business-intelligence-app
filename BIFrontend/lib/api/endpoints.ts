@@ -25,14 +25,20 @@ import type {
   DashboardState,
 } from "../types"
 
+
+
 const USE_MOCK = !process.env.NEXT_PUBLIC_API_BASE_URL
 const CACHE_5M = 5 * 60 * 1000
 
 async function withFallback<T>(fetcher: () => Promise<T>, fallback: T): Promise<T> {
+
+  console.log("API_BASE_URL", process.env.NEXT_PUBLIC_API_BASE_URL, "USE_MOCK", USE_MOCK)
+
   if (USE_MOCK) return fallback
   try {
     return await fetcher()
-  } catch {
+  } catch (e) {
+    console.error("Fallback")
     return fallback
   }
 }
