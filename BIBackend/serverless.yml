@@ -2,15 +2,18 @@ service: my-serverless-app
 
 frameworkVersion: '3'
 
+useDotenv: true
+
 provider:
   name: aws
   runtime: nodejs18.x
   region: eu-central-1 # Optional: AWS-Region
   environment:
-      DB_HOST: 
-      DB_USER: 
-      DB_PASSWORD: 
-      DB_NAME: 
+      BI_DB_HOST: ${env:BI_DB_HOST}
+      BI_DB_USER: ${env:BI_DB_USER}
+      BI_DB_PASSWORD: ${env:BI_DB_PASSWORD}
+      BI_DB_NAME: ${env:BI_DB_NAME}
+      BI_DB_PORT: ${env:BI_DB_PORT}
       NODE_OPTIONS: --enable-source-maps --stack-trace-limit=1000
 
 functions:
