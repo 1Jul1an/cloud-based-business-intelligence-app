@@ -167,7 +167,7 @@ Dieses Projekt wurde im Rahmen eines Hochschulmoduls erstellt und dient ausschli
 
 ### KPI Dashboard (Use-Case 1) 
 (26.04.2026) Neues BIFrontend in Svelte
-![KPI Dashboard]https://github.com/user-attachments/assets/144a27c7-b553-4c18-a86f-5c4cb17b950a)
+![KPI Dashboard](https://github.com/user-attachments/assets/144a27c7-b553-4c18-a86f-5c4cb17b950a)
 
 ---
 
