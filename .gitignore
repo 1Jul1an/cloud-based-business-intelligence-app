@@ -56,3 +56,14 @@ coverage/
 # For example, if you have a local config file not tracked by git:
 # config.local.js
 # my-secret-keys.json
+
+BIFrontend/.playwright.config.js
+BIFrontend/README.md
+BIFrontend/vite.config.ts
+BIFrontend/svelte.config.js
+BIFrontend/.prettierignore
+BIFrontend/.prettierrc
+BIFrontend/.npmrc
+BIFrontend/playwright.config.js
+BIFrontend/yarn.lock
+*.lock
